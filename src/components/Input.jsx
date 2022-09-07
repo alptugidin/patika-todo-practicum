@@ -10,8 +10,7 @@ function Input() {
   const dispatch = useDispatch();
   const activities = useSelector((state) => state.todos.activities);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const addToList = () => {
     if (value.length >= 3 && value.length !== 0) {
       if (activities.some((item) => item.content === value)) {
         setPopup(true);
@@ -25,8 +24,17 @@ function Input() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addToList();
+  };
+
   const handleOnChange = (e) => {
     setValue(e.target.value);
+  };
+
+  const handleClick = () => {
+    addToList();
   };
 
   return (
@@ -50,6 +58,7 @@ function Input() {
           className="w-full h-10 outline-none drop-shadow-lg bg-white rounded-full pl-5 pr-[73px] text-red-500 font-semibold"
         />
         <button
+          onClick={handleClick}
           type="button"
           className="text-white bg-opacity-70 font-semibold absolute right-0 bg-red-500 h-9 px-5 mt-0.5 mr-0.5 rounded-full transition-all hover:bg-red-500"
         >

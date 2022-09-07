@@ -7,7 +7,6 @@ import loadingAnimation from '@/assets/lf30_editor_ezjhlfqj.json';
 
 function ToDo() {
   const isLoading = useSelector((state) => state.todos.isLoading);
-
   return (
     <div className="bg-red-500 w-[600px] rounded-lg mx-auto mt-52 drop-shadow-lg">
       <div
@@ -17,7 +16,8 @@ function ToDo() {
         <p className="text-2xl text-gray-100 text-center font-semibold">User's todo list</p>
       </div>
       <Input />
-      {isLoading && <Lottie animationData={loadingAnimation} className="w-56 mx-auto" />}
+      {isLoading && <Lottie animationData={loadingAnimation} className="w-56 mx-auto opacity-70" />}
+
       <List />
     </div>
   );

@@ -15,12 +15,24 @@ export const postTodos = createAsyncThunk('todos/postTodos', async ({ content })
   return response.data;
 });
 
+export const deleteTodos = createAsyncThunk('todos/deleteTodos', async ({ id }) => {
+  const response = await axios.delete(`${import.meta.env.VITE_MOCK_API}/todos/${id}`);
+  return response.data;
+});
+
+export const putTodos = createAsyncThunk('todos/putTodos', async ({ id, content }) => {
+  const response = await axios.put(`${import.meta.env.VITE_MOCK_API}/todos/${id}`, { content });
+  return response.data;
+});
+
 export const activitySlice = createSlice({
   name: 'todos',
   initialState: {
     activities: [],
     isLoading: false,
     isPosting: false,
+    isRemoving: false,
+    isUpdating: false,
     error: null,
   },
 
@@ -53,9 +65,23 @@ export const activitySlice = createSlice({
 
     [postTodos.fulfilled]: (state, action) => {
       state.isPosting = false;
-      console.log(action.payload);
       state.activities.push(action.payload);
     },
+    // DELETE
+    [deleteTodos.pending]: (state) => {
+      state.isRemoving = true;
+    },
+
+    [deleteTodos.rejected]: (state, action) => {
+      state.isRemoving = false;
+      state.error = action.message;
+    },
+
+    [deleteTodos.fulfilled]: (state, action) => {
+      state.isRemoving = false;
+      state.activities = state.activities.filter((item) => item.id !== action.payload.id);
+    },
+    // PUT
   },
 
 });
