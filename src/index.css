@@ -5,3 +5,11 @@
 html{
     @apply bg-gradient-to-r from-green-400 to-blue-500 opacity-90;
 }
+
+.animate-pulse  {
+    animation: pulse .8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.activity-item:hover >  .button-div {
+    @apply block
+}

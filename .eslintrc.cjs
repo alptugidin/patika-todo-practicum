@@ -24,10 +24,12 @@ module.exports = {
     "no-mixed-spaces-and-tabs": 0,
     "import/extensions" : 0,
     "import/no-unresolved": 0,
+    "import/no-absolute-path": 0,
     "no-console": "off",
     "no-tabs": "off",
     "react/prop-types": "off",
     "react/no-unescaped-entities" : "off",
     "radix": "off"
+    
   },
 };
