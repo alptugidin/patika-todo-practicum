@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const getTodos = createAsyncThunk('todos/getTodos', async () => {
@@ -20,8 +20,13 @@ export const deleteTodos = createAsyncThunk('todos/deleteTodos', async ({ id }) 
   return response.data;
 });
 
-export const putTodos = createAsyncThunk('todos/putTodos', async ({ id, content }) => {
+export const putContent = createAsyncThunk('todos/putContent', async ({ id, content }) => {
   const response = await axios.put(`${import.meta.env.VITE_MOCK_API}/todos/${id}`, { content });
+  return response.data;
+});
+
+export const putCompleted = createAsyncThunk('todos/putCompleted', async ({ id, isCompleted }) => {
+  const response = await axios.put(`${import.meta.env.VITE_MOCK_API}/todos/${id}`, { isCompleted });
   return response.data;
 });
 
@@ -34,6 +39,13 @@ export const activitySlice = createSlice({
     isRemoving: false,
     isUpdating: false,
     error: null,
+    warning: false,
+  },
+
+  reducers: {
+    triggerWarning: (state, action) => {
+      state.warning = action.payload;
+    },
   },
 
   extraReducers: {
@@ -67,6 +79,7 @@ export const activitySlice = createSlice({
       state.isPosting = false;
       state.activities.push(action.payload);
     },
+
     // DELETE
     [deleteTodos.pending]: (state) => {
       state.isRemoving = true;
@@ -81,9 +94,40 @@ export const activitySlice = createSlice({
       state.isRemoving = false;
       state.activities = state.activities.filter((item) => item.id !== action.payload.id);
     },
-    // PUT
+
+    // PUT CONTENT
+    [putContent.pending]: (state) => {
+      state.isUpdating = true;
+    },
+
+    [putContent.rejected]: (state, action) => {
+      state.isUpdating = false;
+      state.error = action.message;
+    },
+
+    [putContent.fulfilled]: (state, action) => {
+      const index = state.activities.findIndex((item) => item.id === action.payload.id);
+      if (state.activities.some((item) => item.content === action.payload.content)) {
+        state.warning = true;
+      } else {
+        state.activities[index].content = action.payload.content;
+        state.warning = false;
+      }
+      state.isUpdating = false;
+    },
+
+    // PUT COMPLETED
+    [putCompleted.rejected]: (state, action) => {
+      state.error = action.message;
+    },
+
+    [putCompleted.fulfilled]: (state, action) => {
+      const index = state.activities.findIndex((item) => item.id === action.payload.id);
+      state.activities[index].isCompleted = !state.activities[index].isCompleted;
+    },
   },
 
 });
 
 export default activitySlice.reducer;
+export const { triggerWarning } = activitySlice.actions;

@@ -1,16 +1,18 @@
 import React, { createRef, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { deleteTodos } from '/redux/activitySlice';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  deleteTodos, putCompleted, putContent, triggerWarning,
+} from '/redux/activitySlice';
 
 function Activity({ activity }) {
   const dispatch = useDispatch();
-  const [done, setDone] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(activity.content);
-
+  const isWarning = useSelector((state) => state.todos.warning);
   const inputRef = createRef();
-  const handleClick = () => {
-    setDone(!done);
+
+  const handleClick = async () => {
+    dispatch(putCompleted({ id: activity.id, isCompleted: !activity.isCompleted }));
   };
 
   const remove = () => {
@@ -19,7 +21,7 @@ function Activity({ activity }) {
     document.getElementById(activity.id).classList.add('opacity-50');
   };
 
-  const edit = async () => {
+  const editModeStatus = async () => {
     await setIsEditing(!isEditing);
   };
 
@@ -27,16 +29,28 @@ function Activity({ activity }) {
     setValue(e.target.value);
   };
 
-  const handleOnSubmit = (e) => {
+  const updateContent = (e) => {
     e.preventDefault();
-    setIsEditing(false);
+    if (value.length >= 3 && value.length !== 0) {
+      if (activity.content === value) {
+        setIsEditing(false);
+        return;
+      }
+      dispatch(putContent({ id: activity.id, content: value }));
+      setIsEditing(false);
+    }
   };
 
   useEffect(() => {
     if (inputRef.current !== null) {
       inputRef.current.select();
     }
-  }, [isEditing]);
+    if (isWarning === true) {
+      setTimeout(() => {
+        dispatch(triggerWarning(false));
+      }, 1500);
+    }
+  }, [isEditing, isWarning]);
 
   return (
     <div
@@ -48,11 +62,11 @@ function Activity({ activity }) {
         type="button"
         className="bg-white w-6 h-6 mt-1.5 ml-1.5 rounded-full cursor-pointer outline-none"
       >
-        {done && <img src="/done.svg" alt="done" className="w-4 ml-1 mt-1" />}
+        {activity.isCompleted && <img src="/done.svg" alt="done" className="w-4 ml-1 mt-1" />}
       </button>
       {isEditing ? (
         <div className=" text-xl px-2 py-1">
-          <form onSubmit={handleOnSubmit}>
+          <form onSubmit={updateContent}>
             <input
               ref={inputRef}
               value={value}
@@ -63,14 +77,14 @@ function Activity({ activity }) {
           </form>
         </div>
       ) : (
-        <p className={`text-xl px-2 py-1 text-gray-100 font-semibold transition-all ${done ? 'line-through decoration-green-500' : ''}`}>
+        <p className={`text-xl px-2 py-1 text-gray-100 font-semibold transition-all ${activity.isCompleted ? 'line-through decoration-green-500 opacity-60' : ''}`}>
           {activity.content}
         </p>
       ) }
 
       <div className="button-div absolute right-1.5 top-1.5 hidden">
         <button
-          onClick={edit}
+          onClick={editModeStatus}
           type="button"
           className="edit-button outline-none mr-1.5 hover:border-b-2"
         >

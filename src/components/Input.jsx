@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postTodos } from '/redux/activitySlice';
+import { postTodos, triggerWarning } from '/redux/activitySlice';
 import activity from '@/components/Activity';
+import WarningPopUp from '@/components/WarningPopUp';
 
 function Input() {
   const [value, setValue] = useState('');
-  const [popup, setPopup] = useState(false);
-
+  // const [isWarning, setWarning] = useState(false);
+  const isWarning = useSelector((state) => state.todos.warning);
   const dispatch = useDispatch();
   const activities = useSelector((state) => state.todos.activities);
 
   const addToList = () => {
     if (value.length >= 3 && value.length !== 0) {
       if (activities.some((item) => item.content === value)) {
-        setPopup(true);
+        dispatch(triggerWarning(true));
         setTimeout(() => {
-          setPopup(false);
+          dispatch(triggerWarning(false));
         }, 1500);
         return;
       }
@@ -39,12 +40,7 @@ function Input() {
 
   return (
     <div className="p-5">
-      <div
-        id="popup"
-        className={`absolute left-0 right-0 ml-auto mr-auto bg-white text-red-600 px-3 py-2 rounded-full -top-48 w-44 text-center font-semibold transition-all pointer-events-none ${popup ? 'opacity-100' : 'opacity-50 -top-96'}`}
-      >
-        <p>Already on the list!</p>
-      </div>
+      <WarningPopUp warning={isWarning} />
       <form
         action=""
         onSubmit={handleSubmit}
