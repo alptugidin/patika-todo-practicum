@@ -88,7 +88,7 @@ function Activity({ activity }) {
           type="button"
           className="edit-button outline-none mr-1.5 hover:border-b-2"
         >
-          <img src="/edit2.svg" alt="edit" />
+          <img src="/edit.svg" alt="edit" />
         </button>
         <button
           onClick={remove}
