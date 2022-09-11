@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import activityReducer from './activitySlice';
-import nightModeREducer from './nightModeSlice';
+import sessionReducer from './sessionSlice';
 
 export const store = configureStore({
   reducer: {
     todos: activityReducer,
-    nightMode: nightModeREducer,
+    session: sessionReducer,
   },
 });

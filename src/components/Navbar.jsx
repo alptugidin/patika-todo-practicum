@@ -1,12 +1,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { nightMode } from '/redux/nightModeSlice';
 
 function Navbar() {
   const dispatch = useDispatch();
-  const isNight = useSelector((state) => state.nightMode.isNight);
+  const isNight = useSelector((state) => state.session.isNight);
   const changeNightMode = () => {
-    dispatch(nightMode());
   };
 
   return (
@@ -22,7 +20,7 @@ function Navbar() {
         <img
           src="/sun.svg"
           alt="sun"
-          className={`absolute right-[60px] transition-all ${isNight ? '-top-[38px]' : 'top-[14px]'}`}
+          className={`absolute right-[60px] transition-all ${isNight ? '-bottom-[38px]' : 'bottom-[14px]'}`}
         />
         <img
           src="/moon.svg"

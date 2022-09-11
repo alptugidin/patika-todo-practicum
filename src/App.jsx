@@ -1,36 +1,42 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import Lottie from 'lottie-react';
-import Input from '@/components/Input';
-import List from '@/components/List';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '@/components/Navbar';
-import loadingAnimation from '@/assets/lf30_editor_ezjhlfqj.json';
-
-function ToDo() {
-  const isLoading = useSelector((state) => state.todos.isLoading);
-  return (
-    <div className="bg-red-500 dark:bg-gray-700 w-[600px] rounded-lg mx-auto drop-shadow-lg">
-      <div
-        id="head"
-        className="p-5"
-      >
-        <p className="text-2xl text-gray-100 text-center font-semibold">User's todo list</p>
-      </div>
-      <Input />
-      {isLoading && <Lottie animationData={loadingAnimation} className="w-56 mx-auto opacity-70" />}
-      <List />
-    </div>
-  );
-}
+import Login from '@/components/Login';
+import Todo from '@/components/Todo';
+import { setIsLogged } from '/redux/sessionSlice';
 
 function App() {
-  const isNight = useSelector((state) => state.nightMode.isNight);
+  const isNight = useSelector((state) => state.session.isNight);
+  const isLogged = useSelector((state) => state.session.isLogged);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (localStorage.getItem('session') === null) {
+      localStorage.setItem('session', JSON.stringify({
+        userName: null,
+        nightMode: false,
+      }));
+    } else {
+      const session = JSON.parse(localStorage.getItem('session'));
+      if (session.userName === null) {
+        dispatch(setIsLogged(false));
+      } else {
+        dispatch(setIsLogged(true));
+      }
+    }
+  }, []);
 
   return (
     <div className={`${isNight ? 'bgdark dark' : 'bgday'} transition-all`}>
       <div className="container mx-auto h-screen pt-52">
-        <Navbar />
-        <ToDo />
+        {isLogged ? (
+          <Todo />
+        ) : (
+          <>
+            <Navbar />
+            <Login />
+          </>
+        )}
       </div>
     </div>
   );
