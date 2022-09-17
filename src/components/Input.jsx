@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postTodos, triggerWarning } from '/redux/activitySlice';
-import activity from '@/components/Activity';
 import WarningPopUp from '@/components/WarningPopUp';
 
 function Input() {
-  const [value, setValue] = useState('');
-  // const [isWarning, setWarning] = useState(false);
-  const isWarning = useSelector((state) => state.todos.warning);
   const dispatch = useDispatch();
+  const [value, setValue] = useState('');
+  const isWarning = useSelector((state) => state.todos.warning);
+  const isPosting = useSelector((state) => state.todos.isPosting);
   const activities = useSelector((state) => state.todos.activities);
 
   const addToList = () => {
@@ -30,16 +29,22 @@ function Input() {
     addToList();
   };
 
-  const handleOnChange = (e) => {
-    setValue(e.target.value);
-  };
-
   const handleClick = () => {
     addToList();
   };
 
+  const handleOnChange = (e) => {
+    setValue(e.target.value);
+  };
+
+  useEffect(() => {
+    if (isPosting) {
+      document.getElementById('activity-input').blur();
+    }
+  }, [isPosting]);
+
   return (
-    <div className="p-5">
+    <div className={`p-5 ${isPosting && 'animate-pulse pointer-events-none opacity-50'}`}>
       <WarningPopUp warning={isWarning} />
       <form
         action=""
@@ -47,6 +52,8 @@ function Input() {
         className="relative w-9/12 mx-auto"
       >
         <input
+          id="activity-input"
+          autoComplete="off"
           type="text"
           placeholder="Activity"
           onChange={handleOnChange}

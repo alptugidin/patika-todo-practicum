@@ -36,8 +36,6 @@ export const activitySlice = createSlice({
     activities: [],
     isLoading: false,
     isPosting: false,
-    isRemoving: false,
-    isUpdating: false,
     error: null,
     warning: false,
   },
@@ -45,6 +43,10 @@ export const activitySlice = createSlice({
   reducers: {
     triggerWarning: (state, action) => {
       state.warning = action.payload;
+    },
+
+    clearCache: (state) => {
+      state.activities = [];
     },
   },
 
@@ -62,7 +64,15 @@ export const activitySlice = createSlice({
 
     [getTodos.fulfilled]: (state, action) => {
       state.isLoading = false;
-      state.activities.push(...action.payload);
+      state.activities.push(...action.payload.map((prevPayload) => (
+        {
+          ...prevPayload,
+          onEdit: false,
+          onComplete: false,
+          onRemove: false,
+          onContent: false,
+        }
+      )));
     },
 
     // POST
@@ -96,8 +106,10 @@ export const activitySlice = createSlice({
     },
 
     // PUT CONTENT
-    [putContent.pending]: (state) => {
+    [putContent.pending]: (state, action) => {
       state.isUpdating = true;
+      const index = state.activities.findIndex((activity) => activity.id === action.meta.arg.id);
+      state.activities[index].onEdit = true;
     },
 
     [putContent.rejected]: (state, action) => {
@@ -107,6 +119,7 @@ export const activitySlice = createSlice({
 
     [putContent.fulfilled]: (state, action) => {
       const index = state.activities.findIndex((item) => item.id === action.payload.id);
+      state.activities[index].onEdit = false;
       if (state.activities.some((item) => item.content === action.payload.content)) {
         state.warning = true;
       } else {
@@ -117,17 +130,25 @@ export const activitySlice = createSlice({
     },
 
     // PUT COMPLETED
+    [putCompleted.pending]: (state, action) => {
+      state.isCompleted = true;
+      const index = state.activities.findIndex((activity) => activity.id === action.meta.arg.id);
+      state.activities[index].onComplete = true;
+    },
+
     [putCompleted.rejected]: (state, action) => {
       state.error = action.message;
     },
 
     [putCompleted.fulfilled]: (state, action) => {
+      state.isCompleted = false;
       const index = state.activities.findIndex((item) => item.id === action.payload.id);
       state.activities[index].isCompleted = !state.activities[index].isCompleted;
+      state.activities[index].onComplete = false;
     },
   },
 
 });
 
 export default activitySlice.reducer;
-export const { triggerWarning } = activitySlice.actions;
+export const { triggerWarning, clearCache } = activitySlice.actions;

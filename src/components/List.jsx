@@ -6,7 +6,6 @@ import ListSkeleton from '@/components/ListSkeleton';
 
 function List() {
   const activities = useSelector((state) => state.todos.activities);
-
   const isPosting = useSelector((state) => state.todos.isPosting);
   const dispatch = useDispatch();
 

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '@/components/Navbar';
 import Login from '@/components/Login';
 import Todo from '@/components/Todo';
-import { setIsLogged } from '/redux/sessionSlice';
+import { setNightMode, setUsername } from '/redux/sessionSlice';
 
 function App() {
+  const username = useSelector((state) => state.session.userName);
   const isNight = useSelector((state) => state.session.isNight);
-  const isLogged = useSelector((state) => state.session.isLogged);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,25 +18,22 @@ function App() {
         nightMode: false,
       }));
     } else {
-      const session = JSON.parse(localStorage.getItem('session'));
-      if (session.userName === null) {
-        dispatch(setIsLogged(false));
-      } else {
-        dispatch(setIsLogged(true));
-      }
+      const storage = JSON.parse(localStorage.getItem('session'));
+      dispatch(setUsername(storage.userName));
+      dispatch(setNightMode(storage.nightMode));
     }
   }, []);
 
   return (
     <div className={`${isNight ? 'bgdark dark' : 'bgday'} transition-all`}>
       <div className="container mx-auto h-screen pt-52">
-        {isLogged ? (
-          <Todo />
-        ) : (
+        {username !== null ? (
           <>
             <Navbar />
-            <Login />
+            <Todo />
           </>
+        ) : (
+          <Login />
         )}
       </div>
     </div>

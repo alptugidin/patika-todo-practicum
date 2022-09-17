@@ -11,14 +11,14 @@ function Activity({ activity }) {
   const isWarning = useSelector((state) => state.todos.warning);
   const inputRef = createRef();
 
-  const handleClick = async () => {
+  const updateCompleted = async () => {
     dispatch(putCompleted({ id: activity.id, isCompleted: !activity.isCompleted }));
   };
 
   const remove = () => {
     dispatch(deleteTodos({ id: activity.id }));
     document.getElementById(activity.id).classList.add('animate-pulse');
-    document.getElementById(activity.id).classList.add('opacity-50');
+    document.getElementById(activity.id).classList.add('pointer-events-none');
   };
 
   const editModeStatus = async () => {
@@ -55,10 +55,10 @@ function Activity({ activity }) {
   return (
     <div
       id={activity.id}
-      className="activity-item bg-white bg-opacity-30 rounded-lg transition-all hover:bg-opacity-50 flex relative"
+      className={`activity-item bg-white bg-opacity-30 rounded-lg transition-all hover:bg-opacity-50 flex relative ${(activity.onComplete || activity.onEdit) && 'animate-pulse pointer-events-none'}`}
     >
       <button
-        onClick={handleClick}
+        onClick={updateCompleted}
         type="button"
         className="bg-white w-6 h-6 mt-1.5 ml-1.5 rounded-full cursor-pointer outline-none"
       >
@@ -82,18 +82,18 @@ function Activity({ activity }) {
         </p>
       ) }
 
-      <div className="button-div absolute right-1.5 top-1.5 hidden">
+      <div className="button-div absolute right-1.5 top-2 hidden">
         <button
           onClick={editModeStatus}
           type="button"
           className="edit-button outline-none mr-1.5 hover:border-b-2"
         >
-          <img src="/edit.svg" alt="edit" />
+          <img src="/edit.svg" alt="edit" className="" />
         </button>
         <button
           onClick={remove}
           type="button"
-          className="delete-button outline-none  hover:border-b-2"
+          className="delete-button outline-none hover:border-b-2"
         >
           <img src="/delete2.svg" alt="delete" />
         </button>

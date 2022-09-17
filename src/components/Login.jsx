@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setIsLogged, setSession } from '/redux/sessionSlice';
+import { setUsername } from '/redux/sessionSlice';
 
 function Login() {
   const dispatch = useDispatch();
@@ -9,9 +9,8 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (value !== '' && value.length > 3) {
-      dispatch(setSession({ userName: value, isNight: false }));
-      dispatch(setIsLogged(true));
-      // localstorage ayarla
+      dispatch(setUsername(value));
+      localStorage.setItem('session', JSON.stringify({ userName: value, nightMode: false }));
     }
   };
 
